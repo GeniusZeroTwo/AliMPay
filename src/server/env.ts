@@ -11,6 +11,7 @@ export interface RuntimeEnv {
   uploadDir: string;
   publicBaseUrl: string;
   allowPrivateCallbacks: boolean;
+  allowedCallbackHosts: string[];
   trustProxy: boolean;
   masterKey: Buffer;
 }
@@ -65,6 +66,10 @@ export function getRuntimeEnv(): RuntimeEnv {
     uploadDir,
     publicBaseUrl: (process.env.PUBLIC_BASE_URL ?? `http://localhost:${Number.isFinite(port) ? port : 3000}`).replace(/\/$/, ""),
     allowPrivateCallbacks: boolEnv(process.env.ALLOW_PRIVATE_CALLBACKS),
+    allowedCallbackHosts: (process.env.ALLOWED_CALLBACK_HOSTS ?? "oci.best,pay.oci.best,iuiuiu.eu.org,pay.iuiuiu.eu.org")
+      .split(",")
+      .map((item) => item.trim().toLowerCase())
+      .filter(Boolean),
     trustProxy: boolEnv(process.env.TRUST_PROXY),
     masterKey: loadMasterKey(dataDir),
   };

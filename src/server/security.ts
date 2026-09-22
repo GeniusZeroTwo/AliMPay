@@ -166,7 +166,16 @@ export function centsToMoney(cents: number) {
   return (cents / 100).toFixed(2);
 }
 
-export function validateCallbackUrl(value: string, allowPrivate: boolean) {
+export function isAllowedCallbackHost(hostname: string, allowedHosts?: string[]): boolean {
+  const host = hostname.toLowerCase();
+  const configured = allowedHosts ?? (process.env.ALLOWED_CALLBACK_HOSTS ?? "oci.best,pay.oci.best,iuiuiu.eu.org,pay.iuiuiu.eu.org")
+    .split(",")
+    .map((h) => h.trim().toLowerCase())
+    .filter(Boolean);
+  return configured.some((allowed) => host === allowed || host.endsWith(`.${allowed}`));
+}
+
+export function validateCallbackUrl(value: string, allowPrivate: boolean, allowedHosts?: string[]) {
   let url: URL;
   try {
     url = new URL(value);
@@ -175,7 +184,9 @@ export function validateCallbackUrl(value: string, allowPrivate: boolean) {
   }
   if (!['http:', 'https:'].includes(url.protocol)) throw new Error("回调地址只允许 HTTP/HTTPS");
   if (url.username || url.password) throw new Error("回调地址不能包含用户名或密码");
-  if (!allowPrivate && isPrivateHostname(url.hostname)) throw new Error("回调地址不能指向本机或私有网络");
+  if (!allowPrivate && !isAllowedCallbackHost(url.hostname, allowedHosts) && isPrivateHostname(url.hostname)) {
+    throw new Error("回调地址不能指向本机或私有网络");
+  }
   return url;
 }
 
@@ -227,8 +238,9 @@ function expandIpv6(address: string) {
   return groups.length === 8 && groups.every(Number.isFinite) ? groups : null;
 }
 
-export async function assertPublicDestination(url: URL, allowPrivate: boolean) {
+export async function assertPublicDestination(url: URL, allowPrivate: boolean, allowedHosts?: string[]) {
   if (allowPrivate) return;
+  if (isAllowedCallbackHost(url.hostname, allowedHosts)) return;
   const results = await lookup(url.hostname, { all: true, verbatim: true });
   if (results.length === 0 || results.some((result) => isPrivateAddress(result.address))) {
     throw new Error("回调域名解析到了私有或保留地址");

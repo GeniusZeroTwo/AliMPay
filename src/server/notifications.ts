@@ -146,8 +146,8 @@ export class NotificationWorker {
     let acknowledged = false;
     try {
       if (!order) throw new Error("关联订单不存在");
-      const target = validateCallbackUrl(order.notify_url, getRuntimeEnv().allowPrivateCallbacks);
-      await assertPublicDestination(target, getRuntimeEnv().allowPrivateCallbacks);
+      const target = validateCallbackUrl(order.notify_url, getRuntimeEnv().allowPrivateCallbacks, getRuntimeEnv().allowedCallbackHosts);
+      await assertPublicDestination(target, getRuntimeEnv().allowPrivateCallbacks, getRuntimeEnv().allowedCallbackHosts);
       const signedUrl = buildSignedCallbackUrl(this.database, order, target.toString());
       const response = await this.fetcher(signedUrl, {
         method: "GET",

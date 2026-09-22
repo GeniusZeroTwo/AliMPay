@@ -33,8 +33,8 @@ function normalizeInput(input: CreateOrderInput) {
   assert(/^[A-Za-z0-9._:-]{1,64}$/.test(outTradeNo), 400, "INVALID_OUT_TRADE_NO", "商户订单号须为 1–64 位字母、数字或 . _ : -");
   assert(name.length > 0 && Buffer.byteLength(name, "utf8") <= 127, 400, "INVALID_NAME", "商品名称不能为空且不能超过 127 字节");
   assert(input.notifyUrl?.length > 0, 400, "INVALID_NOTIFY_URL", "notify_url 不能为空");
-  validateCallbackUrl(input.notifyUrl, getRuntimeEnv().allowPrivateCallbacks);
-  if (input.returnUrl) validateCallbackUrl(input.returnUrl, getRuntimeEnv().allowPrivateCallbacks);
+  validateCallbackUrl(input.notifyUrl, getRuntimeEnv().allowPrivateCallbacks, getRuntimeEnv().allowedCallbackHosts);
+  if (input.returnUrl) validateCallbackUrl(input.returnUrl, getRuntimeEnv().allowPrivateCallbacks, getRuntimeEnv().allowedCallbackHosts);
   return {
     ...input,
     outTradeNo,
