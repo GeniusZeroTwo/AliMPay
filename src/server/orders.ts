@@ -359,13 +359,24 @@ export function createTransferUri(order: OrderRecord, userId: string, layer: Tra
   }[layer];
 }
 
+export function createBusinessQrUri(qrRaw?: string) {
+  if (qrRaw && qrRaw.trim()) {
+    return `alipays://platformapi/startapp?saId=10000007&qrcode=${encodeURIComponent(qrRaw.trim())}`;
+  }
+  return "alipays://platformapi/startapp?saId=10000007";
+}
+
 export function getCheckoutData(database: AppDatabase, token: string, signedReturnUrl?: string | null): CheckoutData | null {
   expireOrders(database);
   const order = database.query("SELECT * FROM orders WHERE checkout_token = ?").get(token) as OrderRecord | null;
   if (!order) return null;
   const businessQrUrl = getSetting(database, "business_qr_url", "");
+  const businessQrRaw = getSetting(database, "business_qr_raw", "");
   const transferUserId = getSetting(database, "transfer_user_id", "");
   const transferLinkLayer = getSetting<TransferLinkLayer>(database, "transfer_link_layer", 2);
+  const paymentUri = order.collection_mode === "transfer"
+    ? createTransferUri(order, transferUserId, transferLinkLayer)
+    : createBusinessQrUri(businessQrRaw);
   return {
     trade_no: order.trade_no,
     out_trade_no: order.out_trade_no,
@@ -378,7 +389,7 @@ export function getCheckoutData(database: AppDatabase, token: string, signedRetu
     expires_at: order.expires_at,
     monitor_until: order.monitor_until,
     payment_poll_interval_seconds: getPaymentPollIntervalSeconds(database),
-    payment_uri: order.collection_mode === "transfer" ? createTransferUri(order, transferUserId, transferLinkLayer) : "",
+    payment_uri: paymentUri,
     business_qr_url: businessQrUrl,
     return_url: order.return_url,
     return_target: signedReturnUrl ?? null,

@@ -69,7 +69,6 @@ export function CheckoutPage() {
     if (
       mobileRedirectAttempted.current ||
       !data ||
-      data.collection_mode !== "transfer" ||
       data.status !== "pending" ||
       !data.payment_uri ||
       Date.parse(data.expires_at) <= Date.now() ||
@@ -192,9 +191,9 @@ export function CheckoutPage() {
               </div>
 
               <div className="mt-4 flex flex-col gap-2">
-                {data.collection_mode === "transfer" && data.payment_uri ? (
+                {data.payment_uri ? (
                   <Button className="w-full md:hidden" asChild>
-                    <a href={data.payment_uri}>打开支付宝<ExternalLink className="size-4" /></a>
+                    <a href={data.payment_uri}>打开支付宝App支付<ExternalLink className="size-4" /></a>
                   </Button>
                 ) : null}
                 <Button variant="outline" className="w-full text-xs" onClick={handleManualCheck} disabled={isChecking}>
@@ -207,7 +206,7 @@ export function CheckoutPage() {
                 <ShieldCheck className="mt-0.5 size-5 shrink-0 text-success" />
                 <p>
                   {data.collection_mode === "business_qr"
-                    ? "打开支付宝扫描经营码，并手动输入上方精确金额。"
+                    ? "若未自动唤起支付宝，请点击上方按钮或手动扫码，并输入上方精确金额。"
                     : `打开支付宝扫码转账；备注必须保持为 ${data.out_trade_no}，不要修改。`}
                 </p>
               </div>
