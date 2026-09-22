@@ -1,6 +1,6 @@
 import { CheckCircle2, Clock3, ExternalLink, RefreshCw, ShieldCheck, TriangleAlert, WalletCards } from "lucide-react";
 import QRCode from "qrcode";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import useSWR from "swr";
 import { PAYMENT_POLL_INTERVAL_DEFAULT_SECONDS, type CheckoutData } from "@/shared/contracts";
@@ -16,19 +16,13 @@ function countdown(milliseconds: number) {
   return `${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(seconds % 60).padStart(2, "0")}`;
 }
 
-function isMobileBrowser() {
-  const browserNavigator = navigator as Navigator & { userAgentData?: { mobile?: boolean } };
-  if (browserNavigator.userAgentData?.mobile === true) return true;
-  return /Android|iPhone|iPad|iPod|Mobile/i.test(browserNavigator.userAgent) ||
-    (/Macintosh/i.test(browserNavigator.userAgent) && browserNavigator.maxTouchPoints > 1);
-}
+
 
 export function CheckoutPage() {
   const { token = "" } = useParams();
   const [now, setNow] = useState(Date.now());
   const [isChecking, setIsChecking] = useState(false);
   const [redirectCountdown, setRedirectCountdown] = useState(2);
-  const mobileRedirectAttempted = useRef(false);
 
   const { data, error, isLoading, mutate } = useSWR<CheckoutData>(`/public-api/checkout/${encodeURIComponent(token)}`, swrFetcher, {
     refreshInterval: (latest) => {
@@ -65,19 +59,7 @@ export function CheckoutPage() {
     };
   }, [mutate]);
 
-  useEffect(() => {
-    if (
-      mobileRedirectAttempted.current ||
-      !data ||
-      data.status !== "pending" ||
-      !data.payment_uri ||
-      Date.parse(data.expires_at) <= Date.now() ||
-      !isMobileBrowser()
-    ) return;
 
-    mobileRedirectAttempted.current = true;
-    window.location.assign(data.payment_uri);
-  }, [data]);
 
   const paid = data?.status === "paid" || data?.status === "late_paid";
 
@@ -206,7 +188,7 @@ export function CheckoutPage() {
                 <ShieldCheck className="mt-0.5 size-5 shrink-0 text-success" />
                 <p>
                   {data.collection_mode === "business_qr"
-                    ? "若未自动唤起支付宝，请点击上方按钮或手动扫码，并输入上方精确金额。"
+                    ? "请点击上方“打开支付宝App支付”按钮，或使用手机扫码，并输入上方精确金额。"
                     : `打开支付宝扫码转账；备注必须保持为 ${data.out_trade_no}，不要修改。`}
                 </p>
               </div>
