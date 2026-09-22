@@ -157,8 +157,16 @@ export function CheckoutPage() {
                 </Badge>
               </div>
               {data.payable_money !== data.requested_money ? (
-                <div className="mt-4 rounded-md border border-primary/30 bg-primary/5 p-3 text-sm leading-6">
-                  <span className="font-semibold">请按显示金额准确支付。</span> 商户金额为 ¥{data.requested_money}，系统为本订单分配了唯一分位金额。
+                <div className="mt-4 flex items-start gap-2.5 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3.5 text-sm leading-6 text-amber-950 dark:text-amber-200">
+                  <TriangleAlert className="mt-0.5 size-5 shrink-0 text-amber-600 dark:text-amber-400" />
+                  <div>
+                    <p className="font-semibold text-amber-900 dark:text-amber-100">
+                      请务必严格支付金额：<span className="text-base font-bold text-destructive">¥{data.payable_money}</span>
+                    </p>
+                    <p className="mt-0.5 text-xs text-muted">
+                      为确保系统能自动识别您的订单并立即发货，请按此金额付款，请勿多付或少付。
+                    </p>
+                  </div>
                 </div>
               ) : null}
 
@@ -188,7 +196,7 @@ export function CheckoutPage() {
                 <ShieldCheck className="mt-0.5 size-5 shrink-0 text-success" />
                 <p>
                   {data.collection_mode === "business_qr"
-                    ? "请点击上方“打开支付宝App支付”按钮，或使用手机扫码，并输入上方精确金额。"
+                    ? `请打开支付宝并输入上方精确金额 ¥${data.payable_money} 进行支付；请勿多付或少付，否则系统无法自动识别发货。`
                     : `打开支付宝扫码转账；备注必须保持为 ${data.out_trade_no}，不要修改。`}
                 </p>
               </div>
@@ -227,7 +235,7 @@ export function CheckoutPage() {
             </Card>
             <Card>
               <CardContent className="px-5 py-5 text-xs leading-5 text-muted">
-                <p>页面每 {data.payment_poll_interval_seconds} 秒查询一次本地订单状态。只有存在待确认订单时，服务器才会合并请求支付宝账务接口。</p>
+                <p>支付成功后，系统通常在数秒内自动识别并跳转发货。如遇网络延迟，您也可点击「立即刷新查单」主动同步最新状态。</p>
                 <p className="mt-3">切勿重复支付；支付完成后请等待页面自动确认。</p>
               </CardContent>
             </Card>
