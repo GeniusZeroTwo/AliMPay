@@ -52,7 +52,7 @@ export function OrderDetailPage() {
 
       <div className="mt-6 grid gap-6 xl:grid-cols-2">
         <Card>
-          <CardHeader><CardTitle>订单信息</CardTitle><CardDescription>订单过期后仍保留，自动监控在第 10 分钟结束。</CardDescription></CardHeader>
+          <CardHeader><CardTitle>订单信息</CardTitle><CardDescription>订单过期后仍保留，自动监控在第 7 分钟结束。</CardDescription></CardHeader>
           <CardContent>
             <dl className="grid gap-5 sm:grid-cols-2">
               <Field label="平台订单号" value={order.trade_no} mono /><Field label="商户订单号" value={order.out_trade_no} mono />

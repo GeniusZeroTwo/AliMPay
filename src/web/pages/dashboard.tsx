@@ -18,7 +18,7 @@ export function DashboardPage() {
   const metrics = [
     { label: "今日订单", value: String(data.today_order_count), note: `${data.today_paid_count} 笔已支付`, icon: ShoppingCart },
     { label: "今日实收", value: formatMoney(data.today_paid_cents), note: "按商户原始金额统计", icon: CircleDollarSign },
-    { label: "正在监控", value: String(data.active_monitors), note: "最多持续 10 分钟", icon: Clock3 },
+    { label: "正在监控", value: String(data.active_monitors), note: "最多持续 7 分钟", icon: Clock3 },
     { label: "通知失败", value: String(data.notify_failed_count), note: "自动尝试最多 10 次", icon: Send },
   ];
 

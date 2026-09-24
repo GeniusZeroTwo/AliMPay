@@ -33,7 +33,7 @@ describe("order allocation and idempotency", () => {
 });
 
 describe("payment state machine", () => {
-  it("marks payments in minutes 5-10 as late_paid and deduplicates account logs", () => {
+  it("marks payments in minutes 5-7 as late_paid and deduplicates account logs", () => {
     ({ database } = configuredDatabase());
     const order = createOrder(database, orderInput(1)).order;
     const now = new Date();
@@ -56,7 +56,6 @@ describe("payment state machine", () => {
     expect(result.matched).toBe(true);
     expect(getOrderById(database, order.id)?.status).toBe("late_paid");
     expect(recordAndMatchPayment(database, event, getActiveOrders(database)).duplicate).toBe(true);
-    expect(database.query("SELECT 1 FROM amount_reservations WHERE order_id = ?").get(order.id)).toBeNull();
     expect((database.query("SELECT COUNT(*) AS count FROM notification_jobs").get() as { count: number }).count).toBe(1);
   });
 

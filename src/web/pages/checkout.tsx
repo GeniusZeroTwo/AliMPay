@@ -128,7 +128,7 @@ export function CheckoutPage() {
           <CardContent className="px-6 py-10 text-center">
             <Clock3 className="mx-auto size-10 text-destructive" />
             <h1 className="mt-4 text-xl font-semibold">订单确认窗口已结束</h1>
-            <p className="mt-2 text-sm leading-6 text-muted">系统未在 10 分钟内匹配到支付。请不要继续付款，并返回商户重新创建订单。</p>
+            <p className="mt-2 text-sm leading-6 text-muted">系统未在 7 分钟内匹配到支付。请不要继续付款，并返回商户重新创建订单。</p>
             <div className="mt-6 rounded-md border p-3 text-left text-xs text-muted">
               商户订单号：<span className="font-mono text-foreground">{data.out_trade_no}</span>
             </div>

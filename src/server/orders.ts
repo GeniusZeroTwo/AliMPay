@@ -101,14 +101,14 @@ export function createOrder(database: AppDatabase, rawInput: CreateOrderInput): 
           break;
         }
       }
-      assert(allocated, 429, "AMOUNT_POOL_EXHAUSTED", "当前相同金额的待支付订单过多，请十分钟后重试");
+      assert(allocated, 429, "AMOUNT_POOL_EXHAUSTED", "当前相同金额的待支付订单过多，请稍后重试");
     }
 
     const id = crypto.randomUUID();
     const tradeNo = createTradeNo();
     const checkoutToken = randomToken(24);
     const expiresAt = utcAfter(5 * 60_000, nowMs);
-    const monitorUntil = utcAfter(10 * 60_000, nowMs);
+    const monitorUntil = utcAfter(7 * 60_000, nowMs);
     const rawRequest = { ...(input.rawRequest ?? {}) };
     delete rawRequest.sign;
     delete rawRequest.key;
@@ -270,7 +270,6 @@ export function recordAndMatchPayment(database: AppDatabase, event: AccountLogEv
           INSERT INTO notification_jobs(id, order_id, status, attempts, max_attempts, next_attempt_at, manual, created_at, updated_at)
           VALUES (?, ?, 'pending', 0, 10, ?, 0, ?, ?)
         `).run(crypto.randomUUID(), current.id, receivedAt, receivedAt, receivedAt);
-        database.query("DELETE FROM amount_reservations WHERE order_id = ?").run(current.id);
       } else {
         matchedOrder = undefined;
       }
