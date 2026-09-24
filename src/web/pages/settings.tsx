@@ -38,6 +38,7 @@ function SettingsForm({ initial, refresh }: { initial: SettingsData; refresh: ()
   const [endpoint, setEndpoint] = useState(initial.alipay_endpoint);
   const [alipayPublicKey, setAlipayPublicKey] = useState(initial.alipay_public_key);
   const [paymentPollInterval, setPaymentPollInterval] = useState(String(initial.payment_poll_interval_seconds));
+  const [businessQrRaw, setBusinessQrRaw] = useState(initial.business_qr_raw ?? "");
   const [v1Enabled, setV1Enabled] = useState(initial.v1_enabled);
   const [v2Enabled, setV2Enabled] = useState(initial.v2_enabled);
   const [saving, setSaving] = useState(false);
@@ -57,6 +58,7 @@ function SettingsForm({ initial, refresh }: { initial: SettingsData; refresh: ()
           alipay_endpoint: endpoint,
           alipay_public_key: alipayPublicKey,
           payment_poll_interval_seconds: Number(paymentPollInterval),
+          business_qr_raw: businessQrRaw,
           v1_enabled: v1Enabled,
           v2_enabled: v2Enabled,
         }),
@@ -102,6 +104,19 @@ function SettingsForm({ initial, refresh }: { initial: SettingsData; refresh: ()
                 } catch (error) { toast.error(error instanceof Error ? error.message : "上传失败"); }
               }} />
               <p className="flex items-start gap-2 text-xs leading-5 text-muted"><Upload className="mt-0.5 size-3.5 shrink-0" />支持 PNG、JPEG、WebP，最大 5MB。</p>
+              <div className="space-y-1.5 pt-2">
+                <Label htmlFor="qr-raw">经营码原始内容 / URL（可选）</Label>
+                <Input
+                  id="qr-raw"
+                  value={businessQrRaw}
+                  onChange={(event) => setBusinessQrRaw(event.target.value.trim())}
+                  placeholder="https://qr.alipay.com/bax..."
+                  className="font-mono text-xs"
+                />
+                <p className="text-xs leading-5 text-muted">
+                  填写经营码解析出的原始链接（如 https://qr.alipay.com/...）。填写后收银台可在移动端直接唤起支付宝付款，无需手动扫码。
+                </p>
+              </div>
             </div>
             <div className="space-y-3">
               <Label htmlFor="transfer-user">支付宝用户 ID</Label>

@@ -107,7 +107,7 @@ export function CheckoutPage() {
             {data.return_target ? (
               <div className="mt-6 space-y-3">
                 <p className="text-sm font-medium text-primary">
-                  {redirectCountdown > 0 ? `${redirectCountdown} 秒后自动跳转至卡网...` : "正在跳转..."}
+                  {redirectCountdown > 0 ? `${redirectCountdown} 秒后自动返回商户页面...` : "正在跳转..."}
                 </p>
                 <Button className="w-full" asChild>
                   <a href={data.return_target}>立即返回商户页面<ExternalLink className="size-4" /></a>

@@ -66,7 +66,7 @@ export function getRuntimeEnv(): RuntimeEnv {
     uploadDir,
     publicBaseUrl: (process.env.PUBLIC_BASE_URL ?? `http://localhost:${Number.isFinite(port) ? port : 3000}`).replace(/\/$/, ""),
     allowPrivateCallbacks: boolEnv(process.env.ALLOW_PRIVATE_CALLBACKS),
-    allowedCallbackHosts: (process.env.ALLOWED_CALLBACK_HOSTS ?? "oci.best,pay.oci.best,iuiuiu.eu.org,pay.iuiuiu.eu.org")
+    allowedCallbackHosts: (process.env.ALLOWED_CALLBACK_HOSTS ?? "")
       .split(",")
       .map((item) => item.trim().toLowerCase())
       .filter(Boolean),

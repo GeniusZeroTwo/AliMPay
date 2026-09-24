@@ -56,6 +56,7 @@ describe("payment state machine", () => {
     expect(result.matched).toBe(true);
     expect(getOrderById(database, order.id)?.status).toBe("late_paid");
     expect(recordAndMatchPayment(database, event, getActiveOrders(database)).duplicate).toBe(true);
+    expect(database.query("SELECT 1 FROM amount_reservations WHERE order_id = ?").get(order.id)).toBeNull();
     expect((database.query("SELECT COUNT(*) AS count FROM notification_jobs").get() as { count: number }).count).toBe(1);
   });
 

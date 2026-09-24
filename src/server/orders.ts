@@ -145,6 +145,8 @@ export function createOrder(database: AppDatabase, rawInput: CreateOrderInput): 
 }
 
 export function expireOrders(database: AppDatabase, now = new Date().toISOString()) {
+  const hasExpired = database.query("SELECT 1 FROM orders WHERE status = 'pending' AND expires_at <= ? LIMIT 1").get(now);
+  if (!hasExpired) return 0;
   return database.query("UPDATE orders SET status = 'expired' WHERE status = 'pending' AND expires_at <= ?").run(now).changes;
 }
 
@@ -268,6 +270,7 @@ export function recordAndMatchPayment(database: AppDatabase, event: AccountLogEv
           INSERT INTO notification_jobs(id, order_id, status, attempts, max_attempts, next_attempt_at, manual, created_at, updated_at)
           VALUES (?, ?, 'pending', 0, 10, ?, 0, ?, ?)
         `).run(crypto.randomUUID(), current.id, receivedAt, receivedAt, receivedAt);
+        database.query("DELETE FROM amount_reservations WHERE order_id = ?").run(current.id);
       } else {
         matchedOrder = undefined;
       }

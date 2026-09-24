@@ -110,6 +110,13 @@ export class NotificationWorker {
 
   private claimNext() {
     const now = new Date().toISOString();
+    const hasPending = this.database.query(`
+      SELECT 1 FROM notification_jobs
+      WHERE status = 'pending' AND next_attempt_at <= ?
+      LIMIT 1
+    `).get(now);
+    if (!hasPending) return null;
+
     this.database.exec("BEGIN IMMEDIATE");
     try {
       const job = this.database.query(`

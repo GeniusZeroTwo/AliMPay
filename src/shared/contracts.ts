@@ -67,6 +67,7 @@ export interface PublicSettings {
   transfer_link_layer: TransferLinkLayer;
   payment_poll_interval_seconds: number;
   business_qr_url: string;
+  business_qr_raw: string;
   alipay_app_id: string;
   alipay_endpoint: string;
   alipay_configured: boolean;

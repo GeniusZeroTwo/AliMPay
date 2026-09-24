@@ -258,11 +258,12 @@ export function createAdminRoutes(database: AppDatabase, scanner: PaymentScanner
     const body = await c.req.json<Record<string, unknown>>().catch(() => ({} as Record<string, unknown>));
     const allowed = new Set([
       "public_base_url", "collection_mode", "transfer_user_id", "alipay_app_id",
-      "transfer_link_layer", "payment_poll_interval_seconds", "alipay_endpoint", "alipay_public_key", "v1_enabled", "v2_enabled",
+      "transfer_link_layer", "payment_poll_interval_seconds", "alipay_endpoint", "alipay_public_key", "v1_enabled", "v2_enabled", "business_qr_raw",
     ]);
     for (const key of Object.keys(body)) {
       if (!allowed.has(key)) throw new AppError(400, "UNKNOWN_SETTING", `不支持设置项 ${key}`);
     }
+    if (typeof body.business_qr_raw === "string") setSetting(database, "business_qr_raw", body.business_qr_raw.trim());
     if (typeof body.public_base_url === "string") setSetting(database, "public_base_url", validatePublicBaseUrl(body.public_base_url));
     if (body.collection_mode === "business_qr" || body.collection_mode === "transfer") setSetting(database, "collection_mode", body.collection_mode);
     if (body.transfer_link_layer !== undefined) {

@@ -168,7 +168,7 @@ export function centsToMoney(cents: number) {
 
 export function isAllowedCallbackHost(hostname: string, allowedHosts?: string[]): boolean {
   const host = hostname.toLowerCase();
-  const configured = allowedHosts ?? (process.env.ALLOWED_CALLBACK_HOSTS ?? "oci.best,pay.oci.best,iuiuiu.eu.org,pay.iuiuiu.eu.org")
+  const configured = allowedHosts ?? (process.env.ALLOWED_CALLBACK_HOSTS ?? "")
     .split(",")
     .map((h) => h.trim().toLowerCase())
     .filter(Boolean);
