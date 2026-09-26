@@ -24,7 +24,8 @@ export function LoginPage() {
     setSubmitting(true);
     try {
       await apiFetch("/admin-api/login", { method: "POST", ...jsonBody({ username: "admin", password }) });
-      await mutate("/admin-api/me");
+      const me = await apiFetch<{ user: { username: string } }>("/admin-api/me");
+      await mutate("/admin-api/me", me, { revalidate: false });
       navigate("/dashboard", { replace: true });
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "登录失败");

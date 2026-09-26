@@ -16,8 +16,8 @@ import { SetupPage } from "@/web/pages/setup";
 import { SystemPage } from "@/web/pages/system";
 
 function RequireAdmin({ children }: { children: ReactNode }) {
-  const { data, error, isLoading } = useSWR<{ user: { username: string } }>("/admin-api/me", swrFetcher, { shouldRetryOnError: false });
-  if (isLoading) return <Loading label="正在验证会话" />;
+  const { data, error, isLoading, isValidating } = useSWR<{ user: { username: string } }>("/admin-api/me", swrFetcher, { shouldRetryOnError: false });
+  if (isLoading || (isValidating && !data)) return <Loading label="正在验证会话" />;
   if (error instanceof ApiClientError && error.status === 401) return <Navigate to="/login" replace />;
   if (error || !data) return <Navigate to="/login" replace />;
   return children;

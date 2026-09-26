@@ -31,8 +31,9 @@ export function SetupPage() {
     setSubmitting(true);
     try {
       await apiFetch("/admin-api/setup", { method: "POST", ...jsonBody({ password, public_base_url: baseUrl }) });
-      await mutate("/admin-api/setup/status");
-      await mutate("/admin-api/me");
+      const me = await apiFetch<{ user: { username: string } }>("/admin-api/me");
+      await mutate("/admin-api/setup/status", { setup_completed: true }, { revalidate: false });
+      await mutate("/admin-api/me", me, { revalidate: false });
       navigate("/dashboard", { replace: true });
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "初始化失败");
